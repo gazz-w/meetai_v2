@@ -173,4 +173,8 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
+#ffmpeg.exe
+ffmpeg.exe
+C:\meetai_v2\ffmpeg.exe
+
 # End of https://www.toptal.com/developers/gitignore/api/python
