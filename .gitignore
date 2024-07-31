@@ -177,4 +177,7 @@ pyrightconfig.json
 ffmpeg.exe
 C:\meetai_v2\ffmpeg.exe
 
+#arquivos
+arquivos
+
 # End of https://www.toptal.com/developers/gitignore/api/python
