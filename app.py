@@ -8,10 +8,15 @@ from datetime import datetime
 import time
 import queue
 import pydub
-from moviepy.editor import AudioFileClip
+from moviepy.editor import VideoFileClip
 
 PASTA_ARQUIVOS = Path(__file__).parent / 'arquivos'
 PASTA_ARQUIVOS.mkdir(exist_ok=True)
+PATAS_TEMP = Path(__file__).parent / 'temp'
+PATAS_TEMP.mkdir(exist_ok=True)
+ARQUIVO_AUDIO_TEMP = PATAS_TEMP / 'audio_temp.mp3'
+ARQUIVO_VIDEO_TEMP = PATAS_TEMP / 'video_temp.mp4'
+
 
 # Carregar a API Key do arquivo .env
 load_dotenv()
@@ -108,7 +113,7 @@ def tab_grava_reuniao():
                 if agora - ultima_transcricao > 5:  # 5 segundos pode ser maior no futuro
                     ultima_transcricao = agora
                     audio_chunk.export(pasta_reuniao / 'audio_temp.mp3')
-                    transcricao_chunck = trancreve_audio(
+                    transcricao_chunck = transcreve_audio(
                         pasta_reuniao / 'audio_temp.mp3')
                     transcricao += transcricao_chunck
                     salva_arquivo(pasta_reuniao /
@@ -136,10 +141,11 @@ def tab_selecao_reuniao():
     pasta_reuniao = PASTA_ARQUIVOS / reuniao_data
     if not (pasta_reuniao / 'titulo.txt').exists():
         st.markdown('Adicione um titulo')
-        titulo_reuniao = st.text_input('Titulo da reunião')
+        titulo_reuniao = st.text_input(
+            'Titulo da reunião', key='titulo_reuniao_tab_selecao')
         st.button('Salvar titulo',
                   on_click=salvar_titulo,
-                  args=(pasta_reuniao, titulo_reuniao))
+                  args=(pasta_reuniao, titulo_reuniao), key='salvar_titulo_tab_selecao')
     else:
         titulo = ler_arquivo(pasta_reuniao / 'titulo.txt')
         st.markdown(f'##{titulo}')
@@ -171,20 +177,47 @@ def tab_transcreve_audio():
 # TAB VIDEO =================
 
 
+def print_test():
+    st.write('teste botão')
+
+
 def tab_transcreve_video():
-    st.markdown('tab_video')
+    prompt_input = st.text_input(
+        '(Opicional) Digite aqui as correções das palavras erradas', key='input_video')
+    arquivo_video = st.file_uploader('Selecione o arquivo de video')
+    if not arquivo_video is None:
+        with open(ARQUIVO_VIDEO_TEMP, mode='wb') as video_f:
+            video_f.write(arquivo_video.read())
+        moviepy_video = VideoFileClip(str(ARQUIVO_VIDEO_TEMP))
+        moviepy_video.audio.write_audiofile(str(ARQUIVO_AUDIO_TEMP))
+
+        transcricao = transcreve_audio(ARQUIVO_AUDIO_TEMP, prompt_input)
+
+        st.write(transcricao)
+        pasta_reuniao2 = PASTA_ARQUIVOS / datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+        pasta_reuniao2.mkdir()
+        salva_arquivo(pasta_reuniao2 / 'transcricao.txt', transcricao)
+        if not (pasta_reuniao2 / 'titulo.txt').exists():
+            st.divider()
+            st.markdown('### Adicione um titulo')
+            titulo_reuniao = st.text_input(
+                'Titulo da reunião', key='titulo_reuniao_tab_video')
+            st.button('Salvar titulo', key='salvar_titulo_tab_video',
+                      on_click=salvar_titulo,
+                      args=(pasta_reuniao2, titulo_reuniao))
 
 
 # OPENAI =================
 
 
-def trancreve_audio(caminho_audio, language='pt', response_format='text'):
+def transcreve_audio(caminho_audio, prompt):
     with open(caminho_audio, 'rb') as arquivo_audio:
         transcricao = openai.audio.transcriptions.create(
             model='whisper-1',
-            language=language,
-            response_format=response_format,
+            language='pt',
+            response_format='text',
             file=arquivo_audio,
+            prompt=prompt,
         )
     return transcricao
 
@@ -214,6 +247,8 @@ def main():
         tab_selecao_reuniao()
     with tab_audio:
         tab_transcreve_audio()
+    with tab_video:
+        tab_transcreve_video()
 
 
 if __name__ == "__main__":
