@@ -12,7 +12,7 @@ meetAI é uma aplicação desenvolvida com Streamlit, que utiliza a API da OpenA
 ## Tecnologias Utilizadas
 
 - **Streamlit:** Para a criação da interface de usuário.
-- **OpenAI API:** Para transcrição de áudio e geração de resumo com GPT-4.
+- **OpenAI API:** Para transcrição de áudio e geração de resumo com GPT-4o-mini.
 - **Python:** Linguagem de programação utilizada para desenvolver a aplicação.
 - **dotenv:** Para gerenciamento de variáveis de ambiente.
 
