@@ -6,7 +6,7 @@ meetAI é uma aplicação desenvolvida com Streamlit, que utiliza a API da OpenA
 ## Funcionalidades
 
 - **Transcrição de Áudio e Vídeo:** Upload de arquivos de áudio (mp3, wav, ogg, mpga) e vídeo (mp4) para transcrição.
-- **Geração de Resumo:** Utiliza a GPT-4 para gerar um resumo estruturado da reunião, incluindo os principais pontos discutidos, acordos/combinados e ações a serem tomadas.
+- **Geração de Resumo:** Utiliza a GPT-4o-mini para gerar um resumo estruturado da reunião, incluindo os principais pontos discutidos, acordos/combinados e ações a serem tomadas.
 - **Armazenamento e Seleção de Reuniões:** As transcrições e resumos são salvos e podem ser acessados para revisão.
 
 ## Tecnologias Utilizadas
