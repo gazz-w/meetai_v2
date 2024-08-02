@@ -128,7 +128,7 @@ def tab_transcreve_video():
     elif hasattr(st.session_state, 'transcricao'):
         mostrar_transcricao = st.write(st.session_state.transcricao)
         mostrar_transcricao
-        if st.button('Limpar', key='limpar') and arquivo_video is None:
+        if st.button('Limpar', key='limpar_video') and arquivo_video is None:
             del st.session_state['transcricao']
             del st.session_state['video_transcrito']
             arquivo_video = None
@@ -172,7 +172,7 @@ def tab_transcreve_audio():
 
     elif hasattr(st.session_state, 'transcricao_audio'):
         st.write(st.session_state.transcricao_audio)
-        if st.button('Limpar', key='limpar') and arquivo_audio is None:
+        if st.button('Limpar', key='limpar_audio') and arquivo_audio is None:
             del st.session_state['transcricao_audio']
             del st.session_state['audio_transcrito']
             arquivo_audio = None
