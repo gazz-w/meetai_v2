@@ -44,15 +44,12 @@ formato final:
 
 ####{}#### '''
 
-# Carregar a API Key do arquivo .env
-load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
+# # Carregar a API Key do arquivo .env
+# load_dotenv()
+# api_key = os.getenv("OPENAI_API_KEY")
 
 # carrega a api key no streamlit
-headers = {
-    "authorization": st.secrets["OPENAI_API_KEY"],
-    "content-type": "application/json"
-}
+api_key = st.secrets["OPENAI_API_KEY"]
 
 openai.api_key = api_key
 
