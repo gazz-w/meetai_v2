@@ -2,12 +2,9 @@ import streamlit as st
 from dotenv import load_dotenv, find_dotenv
 import openai
 import os
-from streamlit_webrtc import WebRtcMode, webrtc_streamer
 from pathlib import Path
 from datetime import datetime
 import time
-import queue
-import pydub
 from moviepy.editor import VideoFileClip
 
 PASTA_ARQUIVOS = Path(__file__).parent / 'arquivos'
