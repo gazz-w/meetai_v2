@@ -48,6 +48,12 @@ formato final:
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 
+# carrega a api key no streamlit
+headers = {
+    "authorization": st.secrets["OPENAI_API_KEY"],
+    "content-type": "application/json"
+}
+
 openai.api_key = api_key
 
 # Funções auxiliares =================
