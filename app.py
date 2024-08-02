@@ -93,9 +93,11 @@ def print_test():
 
 
 def tab_transcreve_video():
+    st.subheader("Transcrição de Vídeo")
     prompt_input = st.text_input(
         '(Opicional) Digite aqui as correções das palavras erradas', key='input_video')
-    arquivo_video = st.file_uploader('Selecione o arquivo de video')
+    arquivo_video = st.file_uploader('Selecione o arquivo de video', type=[
+                                     'mp4', 'avi', 'mov', 'wmv'])
 
     if arquivo_video and not hasattr(st.session_state, 'video_transcrito'):
         with open(ARQUIVO_VIDEO_TEMP, mode='wb') as video_f:
@@ -135,12 +137,13 @@ def tab_transcreve_video():
 
 
 def tab_transcreve_audio():
+    st.subheader("Transcrição de Áudio")
 
     prompt_input = st.text_input(
         '(Opicional) Digite aqui as correções das palavras erradas', key='input_audio')
     arquivo_audio = st.file_uploader('Selecione o arquivo de audio', type=[
                                      'mp3', 'wav', 'ogg', 'mpga'])
-    if arquivo_audio:
+    if arquivo_audio and not hasattr(st.session_state, 'audio_transcrito'):
         transcricao = openai.audio.transcriptions.create(
             model='whisper-1',
             language='pt',
@@ -150,8 +153,33 @@ def tab_transcreve_audio():
         )
         st.write(transcricao)
 
+        # cria pasta para salvar os arquivos
+        pasta_reuniao3 = PASTA_ARQUIVOS / datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+        pasta_reuniao3.mkdir()
+        salva_arquivo(pasta_reuniao3 / 'transcricao.txt', transcricao)
+        st.success('Transcrição salva com sucesso')
+
+        time.sleep(4)
+
+        st.divider()
+
+        # Salva os resultados no state para não precisar processar novamente
+        st.session_state.audio_transcrito = True
+        st.session_state.transcricao_audio = transcricao
+
+    elif hasattr(st.session_state, 'transcricao_audio'):
+        st.write(st.session_state.transcricao_audio)
+        if st.button('Limpar', key='limpar') and arquivo_audio is None:
+            del st.session_state['transcricao_audio']
+            del st.session_state['audio_transcrito']
+            arquivo_audio = None
+            st.rerun()
+        else:
+            st.error('Antes de limpar, remova o arquivo')
+
 
 # TAB SELECAO REUNIAO =================
+
 def tab_selecao_reuniao():
     reunioes_dict = listar_reunioes()
 
@@ -237,7 +265,7 @@ def chat_openai(mensagem, modelo='gpt-4o-mini'):
 def main():
     st.header("Bem-vindo ao meetAI", divider=True)
     tab_video, tab_audio, tab_selecao = st.tabs(
-        ['video', 'audio', 'Ver transcrições salvas'])
+        ['Vídeo', 'Áudio', 'Ver transcrições salvas'])
 
     with tab_audio:
         tab_transcreve_audio()
