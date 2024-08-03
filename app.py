@@ -14,6 +14,8 @@ PATAS_TEMP.mkdir(exist_ok=True)
 ARQUIVO_AUDIO_TEMP = PATAS_TEMP / 'audio_temp.mp3'
 ARQUIVO_VIDEO_TEMP = PATAS_TEMP / 'video_temp.mp4'
 
+# Prompt utilizado para gerar o resumo ===================
+
 PROMPT = ''' 
 Faça um resumo do texto delimitado por ####
 O texto é a transcrição de uma reunião.
@@ -97,21 +99,28 @@ def print_test():
 
 def tab_transcreve_video():
     st.subheader("Transcrição de Vídeo")
+
+    # Input para correção de palavras erradas
     prompt_input = st.text_input(
         '(Opicional) Digite aqui as correções das palavras erradas', key='input_video')
     arquivo_video = st.file_uploader('Selecione o arquivo de video', type=[
                                      'mp4', 'avi', 'mov', 'wmv'])
 
+    # IF para o arquivo de vídeo enviado e não ter sido processado (não ter o state video_transcrito)
     if arquivo_video and not hasattr(st.session_state, 'video_transcrito'):
         with open(ARQUIVO_VIDEO_TEMP, mode='wb') as video_f:
             video_f.write(arquivo_video.read())
+
+        # Extrai o audio do video e salva em um arquivo temporário
         moviepy_video = VideoFileClip(str(ARQUIVO_VIDEO_TEMP))
         moviepy_video.audio.write_audiofile(str(ARQUIVO_AUDIO_TEMP))
 
+        # transcreve o audio e mostra a transcrição
         transcricao = transcreve_audio(ARQUIVO_AUDIO_TEMP, prompt_input)
 
         st.write(transcricao)
 
+        # cria pasta e salvar os arquivos
         pasta_reuniao2 = PASTA_ARQUIVOS / datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
         pasta_reuniao2.mkdir()
         salva_arquivo(pasta_reuniao2 / 'transcricao.txt', transcricao)
@@ -128,7 +137,7 @@ def tab_transcreve_video():
     elif hasattr(st.session_state, 'transcricao'):
         mostrar_transcricao = st.write(st.session_state.transcricao)
         mostrar_transcricao
-        if st.button('Limpar', key='limpar_video') and arquivo_video is None:
+        if st.button('Limpar ', key='limpar_video') and arquivo_video is None:
             del st.session_state['transcricao']
             del st.session_state['video_transcrito']
             arquivo_video = None
