@@ -23,6 +23,8 @@ meetAI é uma aplicação desenvolvida com Streamlit, que utiliza a API da OpenA
 
 2. **Configuração:**
    - Crie um arquivo `.env` na raiz do projeto e adicione sua chave da API da OpenAI (`OPENAI_API_KEY`).
+   - Caso deseje subir no streamlit é necessário criar a adicionar a key no "Secrets" do streamlit.
+   - Atenção na linha 50 do `app.py` para descomentar a configuração da key conforme utilização.
 
 3. **Execução:**
    - Execute o comando `streamlit run seu_arquivo.py` para iniciar a aplicação.

@@ -138,6 +138,7 @@ def tab_transcreve_video():
         mostrar_transcricao = st.write(st.session_state.transcricao)
         mostrar_transcricao
         if st.button('Limpar ', key='limpar_video') and arquivo_video is None:
+            # Deleta os estados (state) temporários
             del st.session_state['transcricao']
             del st.session_state['video_transcrito']
             arquivo_video = None
