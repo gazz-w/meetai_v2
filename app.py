@@ -218,9 +218,15 @@ def tab_selecao_reuniao():
         transcricao = ler_arquivo(pasta_reuniao / 'transcricao.txt')
         resumo = ler_arquivo(pasta_reuniao / 'resumo.txt')
         if resumo == '':
-            gerar_resumo = st.button(
-                'Gerar resumo', on_click=def_gerar_resumo, args=(pasta_reuniao,), key='gerar_resumo')
-            resumo = ler_arquivo(pasta_reuniao / 'resumo.txt')
+            prompt_personalizado = st.text_area(
+                    "Insira as instruções de como a ata da reunião transcrita deve ser gerada:")
+            if st.button('Gerar ata'):
+                prompt_formatado = f"{prompt_personalizado}\n\n#### {transcricao} ####"
+                resumo = def_gerar_resumo(pasta_reuniao, prompt_formatado)
+                resumo = ler_arquivo(pasta_reuniao / 'resumo.txt')
+            # gerar_resumo = st.button(
+                #'Gerar resumo', on_click=def_gerar_resumo, args=(pasta_reuniao,), key='gerar_resumo')
+            #resumo = ler_arquivo(pasta_reuniao / 'resumo.txt')
         st.markdown(f'## {titulo}')
         st.markdown(f'{resumo}')
         st.divider()
@@ -242,9 +248,9 @@ def transcreve_audio(caminho_audio, prompt):
     return transcricao
 
 
-def def_gerar_resumo(pasta_reuniao):
+def def_gerar_resumo(pasta_reuniao, prompt_formatado):
     transcricao = ler_arquivo(pasta_reuniao / 'transcricao.txt')
-    resumo = chat_openai(mensagem=PROMPT.format(transcricao))
+    resumo = chat_openai(mensagem=prompt_formatado)
     salva_arquivo(pasta_reuniao / 'resumo.txt', resumo)
     return resumo
 
