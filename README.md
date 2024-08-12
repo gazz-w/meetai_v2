@@ -1,5 +1,5 @@
 
-# meetAI - Transcrição e Resumo de Reuniões
+# pt-br: meetAI - Transcrição e Resumo de Reuniões
 
 meetAI é uma aplicação desenvolvida com Streamlit, que utiliza a API da OpenAI para transcrever e resumir reuniões. A aplicação permite o upload de arquivos de áudio e vídeo, transcreve o conteúdo falado e, utilizando a GPT-4, gera um resumo dos principais pontos discutidos, acordos/combinados e ações a serem tomadas.
 
@@ -42,7 +42,7 @@ Contribuições são bem-vindas! Para contribuir, por favor, crie um fork do rep
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-# EN-US: meetAI - Meeting Transcription and Summarization
+# en-us: meetAI - Meeting Transcription and Summarization
 
 meetAI is a Streamlit-based application that leverages the OpenAI API to transcribe and summarize meetings. The application allows users to upload audio and video files, transcribe spoken content, and generate a summary of key points discussed, agreements made, and actions to be taken using GPT-4.
 
