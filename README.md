@@ -39,4 +39,44 @@ meetAI é uma aplicação desenvolvida com Streamlit, que utiliza a API da OpenA
 
 Contribuições são bem-vindas! Para contribuir, por favor, crie um fork do repositório, faça suas alterações e envie um Pull Request.
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+# EN-US: meetAI - Meeting Transcription and Summarization
+
+meetAI is a Streamlit-based application that leverages the OpenAI API to transcribe and summarize meetings. The application allows users to upload audio and video files, transcribe spoken content, and generate a summary of key points discussed, agreements made, and actions to be taken using GPT-4.
+
+## Features
+- Audio and Video Transcription: Upload audio files (mp3, wav, ogg, mpga) and video files (mp4) for transcription.
+- Summary Generation: Uses GPT-4 to generate a structured summary of the meeting, including key points discussed, agreements made, and actions to be taken.
+- Meeting Storage and Review: Transcriptions and summaries are saved and can be accessed for future review.
+
+## Technologies Used
+- Streamlit: For creating the user interface.
+- OpenAI API: For audio transcription and summary generation using GPT-4.
+- Python: The programming language used to develop the application.
+- dotenv: For managing environment variables.
+
+## How to Use
+
+Installation
+1. Install all necessary dependencies by running:
+   pip install -r requirements.txt
+
+Configuration
+1. Create a .env file at the root of the project and add your OpenAI API key:
+   OPENAI_API_KEY=your_openai_api_key
+2. If you plan to deploy the application on Streamlit, make sure to add the API key to the "Secrets" section in Streamlit.
+3. Pay attention to line 50 in app.py to uncomment the API key configuration according to your usage.
+
+Execution
+1. Run the application with the following command:
+   streamlit run your_file.py
+2. Access the application through the web browser at the address provided by Streamlit.
+
+## Project Structure
+- Transcription and Summarization: The application is divided into tabs for audio transcription, video transcription, and viewing saved transcriptions.
+- Storage: Transcriptions and summaries are saved in specific folders within the project, allowing for easy access and organization.
+
+## Contributions
+Contributions are welcome! To contribute, please fork the repository, make your changes, and submit a Pull Request.
