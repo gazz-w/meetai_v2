@@ -6,6 +6,7 @@ from pathlib import Path
 from datetime import datetime
 import time
 from moviepy.editor import VideoFileClip
+import tempfile
 
 PASTA_ARQUIVOS = Path(__file__).parent / 'arquivos'
 PASTA_ARQUIVOS.mkdir(exist_ok=True)
@@ -153,18 +154,28 @@ def tab_transcreve_audio():
     st.subheader("Transcrição de Áudio")
 
     prompt_input = st.text_input(
-        '(Opicional) Digite aqui as correções das palavras erradas', key='input_audio')
+        '(Opcional) Digite aqui as correções das palavras erradas', key='input_audio')
     arquivo_audio = st.file_uploader('Selecione o arquivo de audio', type=[
                                      'mp3', 'wav', 'ogg', 'mpga'])
     if arquivo_audio and not hasattr(st.session_state, 'audio_transcrito'):
-        transcricao = openai.audio.transcriptions.create(
-            model='whisper-1',
-            language='pt',
-            response_format='text',
-            file=arquivo_audio,
-            prompt=prompt_input
-        )
+
+        #salva os arquivos temporariamente
+        with open(ARQUIVO_AUDIO_TEMP, mode= 'wb') as audio_file:
+            audio_file.write(arquivo_audio.read())
+
+        # faz a transcrição utilizando a nova função
+        transcricao = transcreve_audio(ARQUIVO_AUDIO_TEMP, prompt_input)
+
         st.write(transcricao)
+
+        # transcricao = openai.audio.transcriptions.create(
+           # model='whisper-1',
+           # language='pt',
+           # response_format='text',
+           # file=arquivo_audio,
+           # prompt=prompt_input
+        #)
+        # st.write(transcricao)
 
         # cria pasta para salvar os arquivos
         pasta_reuniao3 = PASTA_ARQUIVOS / datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
@@ -189,6 +200,7 @@ def tab_transcreve_audio():
             st.rerun()
         else:
             st.error('Antes de limpar, remova o arquivo')
+
 
 
 # TAB SELECAO REUNIAO =================
@@ -237,15 +249,48 @@ def tab_selecao_reuniao():
 
 
 def transcreve_audio(caminho_audio, prompt):
+    def read_in_chunks(file_object, chunk_size=23 * 1024 * 1024):
+        """Generator to read a file in chunks of 23MB."""
+        while True:
+            data = file_object.read(chunk_size)
+            if not data:
+                break
+            yield data
+
+    transcricao = ""
+
     with open(caminho_audio, 'rb') as arquivo_audio:
-        transcricao = openai.audio.transcriptions.create(
-            model='whisper-1',
-            language='pt',
-            response_format='text',
-            file=arquivo_audio,
-            prompt=prompt,
-        )
+        for chunk in read_in_chunks(arquivo_audio):
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as temp_chunk:
+                temp_chunk.write(chunk)
+                temp_file_path = temp_chunk.name
+
+            # Carrega o arquivo temporário para a API do Whisper
+            with open(temp_file_path, 'rb') as temp_audio_file:
+                response = openai.audio.transcriptions.create(
+                    model='whisper-1',
+                    language='pt',
+                    response_format='text',
+                    file=temp_audio_file,
+                    prompt=prompt,
+                )
+                transcricao += response
+
+            # Remove o arquivo temporário após o uso
+            os.remove(temp_file_path)
+
     return transcricao
+
+# def transcreve_audio(caminho_audio, prompt):
+   # with open(caminho_audio, 'rb') as arquivo_audio:
+       # transcricao = openai.audio.transcriptions.create(
+           # model='whisper-1',
+           # language='pt',
+           # response_format='text',
+           # file=arquivo_audio,
+            #prompt=prompt,
+      #  )
+  #  return transcricao
 
 
 def def_gerar_resumo(pasta_reuniao, prompt_formatado):
