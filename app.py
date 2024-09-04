@@ -8,6 +8,7 @@ import time
 from moviepy.editor import VideoFileClip
 import tempfile
 
+
 PASTA_ARQUIVOS = Path(__file__).parent / 'arquivos'
 PASTA_ARQUIVOS.mkdir(exist_ok=True)
 PATAS_TEMP = Path(__file__).parent / 'temp'
@@ -48,11 +49,11 @@ formato final:
 ####{}#### '''
 
 # # Carregar a API Key do arquivo .env
-# load_dotenv()
-# api_key = os.getenv("OPENAI_API_KEY")
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
 
 # carrega a api key no streamlit
-api_key = st.secrets["OPENAI_API_KEY"]
+# api_key = st.secrets["OPENAI_API_KEY"]
 
 openai.api_key = api_key
 
@@ -103,7 +104,7 @@ def tab_transcreve_video():
 
     # Input para correção de palavras erradas
     prompt_input = st.text_input(
-        '(Opicional) Digite aqui as correções das palavras erradas', key='input_video')
+        '(Opcional) Digite aqui as correções das palavras erradas', key='input_video')
     arquivo_video = st.file_uploader('Selecione o arquivo de video', type=[
                                      'mp4', 'avi', 'mov', 'wmv'])
 
@@ -149,6 +150,8 @@ def tab_transcreve_video():
 
 # TAB AUDIO =================
 
+# ajustar o código nesse local
+
 
 def tab_transcreve_audio():
     st.subheader("Transcrição de Áudio")
@@ -159,8 +162,8 @@ def tab_transcreve_audio():
                                      'mp3', 'wav', 'ogg', 'mpga'])
     if arquivo_audio and not hasattr(st.session_state, 'audio_transcrito'):
 
-        #salva os arquivos temporariamente
-        with open(ARQUIVO_AUDIO_TEMP, mode= 'wb') as audio_file:
+        # salva os arquivos temporariamente
+        with open(ARQUIVO_AUDIO_TEMP, mode='wb') as audio_file:
             audio_file.write(arquivo_audio.read())
 
         # faz a transcrição utilizando a nova função
@@ -169,12 +172,12 @@ def tab_transcreve_audio():
         st.write(transcricao)
 
         # transcricao = openai.audio.transcriptions.create(
-           # model='whisper-1',
-           # language='pt',
-           # response_format='text',
-           # file=arquivo_audio,
-           # prompt=prompt_input
-        #)
+        # model='whisper-1',
+        # language='pt',
+        # response_format='text',
+        # file=arquivo_audio,
+        # prompt=prompt_input
+        # )
         # st.write(transcricao)
 
         # cria pasta para salvar os arquivos
@@ -200,7 +203,6 @@ def tab_transcreve_audio():
             st.rerun()
         else:
             st.error('Antes de limpar, remova o arquivo')
-
 
 
 # TAB SELECAO REUNIAO =================
@@ -229,24 +231,36 @@ def tab_selecao_reuniao():
         titulo = ler_arquivo(pasta_reuniao / 'titulo.txt')
         transcricao = ler_arquivo(pasta_reuniao / 'transcricao.txt')
         resumo = ler_arquivo(pasta_reuniao / 'resumo.txt')
-        if resumo == '':
+        resumo_path = pasta_reuniao / 'resumo.txt'
+        resumo = ler_arquivo(resumo_path)
+
+        if not resumo:
             prompt_personalizado = st.text_area(
-                    "Insira as instruções de como a ata da reunião transcrita deve ser gerada:")
+                "Insira as instruções de como a ata da reunião transcrita deve ser gerada:")
             if st.button('Gerar ata'):
                 prompt_formatado = f"{prompt_personalizado}\n\n#### {transcricao} ####"
                 resumo = def_gerar_resumo(pasta_reuniao, prompt_formatado)
-                resumo = ler_arquivo(pasta_reuniao / 'resumo.txt')
-            # gerar_resumo = st.button(
-                #'Gerar resumo', on_click=def_gerar_resumo, args=(pasta_reuniao,), key='gerar_resumo')
-            #resumo = ler_arquivo(pasta_reuniao / 'resumo.txt')
+                salva_arquivo(resumo_path, resumo)
+                resumo = ler_arquivo(resumo_path)
+                # resumo = ler_arquivo(pasta_reuniao / 'resumo.txt')
+                # gerar_resumo = st.button(
+                # 'Gerar resumo', on_click=def_gerar_resumo, args=(pasta_reuniao,), key='gerar_resumo')
+                # resumo = ler_arquivo(pasta_reuniao / 'resumo.txt')
+
+        if resumo:
+            st.markdown(f'### Ata: \n{resumo}')
+            st.download_button(label="Baixar ata", data=resumo,
+                               file_name='ata_reuniao.txt', mime='text/plain')
+
         st.markdown(f'## {titulo}')
-        st.markdown(f'{resumo}')
+        # st.markdown(f'{resumo}')
         st.divider()
         st.markdown(f' ### Transcrição:\n {transcricao}')
+        st.download_button(label='Baixar transcrição', data=transcricao,
+                           file_name='transcricao.txt', mime='text/plain')  # botão baixar reunião
 
 
 # OPENAI =================
-
 
 def transcreve_audio(caminho_audio, prompt):
     def read_in_chunks(file_object, chunk_size=23 * 1024 * 1024):
@@ -283,13 +297,13 @@ def transcreve_audio(caminho_audio, prompt):
 
 # def transcreve_audio(caminho_audio, prompt):
    # with open(caminho_audio, 'rb') as arquivo_audio:
-       # transcricao = openai.audio.transcriptions.create(
-           # model='whisper-1',
-           # language='pt',
-           # response_format='text',
-           # file=arquivo_audio,
-            #prompt=prompt,
-      #  )
+    # transcricao = openai.audio.transcriptions.create(
+    # model='whisper-1',
+    # language='pt',
+    # response_format='text',
+    # file=arquivo_audio,
+    # prompt=prompt,
+    #  )
   #  return transcricao
 
 
